@@ -20,8 +20,14 @@ export default function SignInPage() {
             });
 
             if (data.success) {
-                // Redirect to home or dashboard
-                router.push("/");
+                // Check if profile is completed
+                if (data.profileCompleted) {
+                    // Profile complete, go to home
+                    router.push("/");
+                } else {
+                    // Profile incomplete, go to onboarding
+                    router.push("/onboarding");
+                }
                 router.refresh();
             }
         } catch (err) {

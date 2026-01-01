@@ -1,18 +1,13 @@
 import { NextResponse } from 'next/server';
 import { clearSession } from '@/lib/auth';
+import { withLoggingAndErrorHandling } from '@/app/api/middleware/errorHandler';
 
-export async function POST() {
-    try {
-        await clearSession();
+async function handler() {
+    await clearSession();
 
-        return NextResponse.json({
-            success: true,
-        });
-    } catch (error) {
-        console.error('Logout error:', error);
-        return NextResponse.json(
-            { error: 'Failed to logout' },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json({
+        success: true,
+    });
 }
+
+export const POST = withLoggingAndErrorHandling(handler);
