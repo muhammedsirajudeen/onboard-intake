@@ -12,6 +12,7 @@ export default function VideoRecordingPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
     const [userName, setUserName] = useState<string>("User");
+    const [userPicture, setUserPicture] = useState<string | undefined>(undefined);
     const [showInstructions, setShowInstructions] = useState(true);
     const [isRecording, setIsRecording] = useState(false);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
@@ -66,8 +67,9 @@ export default function VideoRecordingPage() {
             try {
                 const response = await api.get("/api/user/profile");
                 if (response.data.success && response.data.user) {
-                    const { videoRecorded, name } = response.data.user;
+                    const { videoRecorded, name, picture } = response.data.user;
                     if (name) setUserName(name);
+                    if (picture) setUserPicture(picture);
 
                     // If video already recorded, redirect to success
                     if (videoRecorded) {
@@ -278,7 +280,7 @@ export default function VideoRecordingPage() {
                         <span className="text-2xl font-bold tracking-tighter">Intake</span>
                         <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
-                    <UserProfile name={userName} />
+                    <UserProfile name={userName} picture={userPicture} />
                 </div>
             </nav>
 
@@ -310,17 +312,17 @@ export default function VideoRecordingPage() {
             )}
 
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center px-6 pt-24 pb-12">
+            <div className="flex-1 flex items-center justify-center px-2 md:px-6 pt-20 md:pt-24 pb-8 md:pb-12">
                 <div className="max-w-6xl w-full">
                     {/* Header */}
-                    <div className="text-center mb-8">
-                        <div className="inline-block mb-4 px-4 py-2 bg-[#00D084]/10 rounded-full text-sm font-medium text-[#00D084]">
+                    <div className="text-center mb-6 md:mb-8">
+                        <div className="inline-block mb-3 md:mb-4 px-3 py-1 md:px-4 md:py-2 bg-[#00D084]/10 rounded-full text-xs md:text-sm font-medium text-[#00D084]">
                             Step 3: Record Your Introduction
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                        <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight">
                             <span className="text-[#00D084]">Video</span> Introduction
                         </h1>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                        <p className="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto">
                             Share your recent technical decisions, wins, and failures
                         </p>
                     </div>
@@ -333,9 +335,9 @@ export default function VideoRecordingPage() {
                     )}
 
                     {/* Video Container */}
-                    <div className="bg-gray-50 rounded-3xl p-6 md:p-8 border border-gray-200">
+                    <div className="bg-gray-50 rounded-2xl md:rounded-3xl p-3 md:p-8 border border-gray-200">
                         {/* Video Display */}
-                        <div className="relative bg-black rounded-2xl overflow-hidden mb-6" style={{ aspectRatio: "16/9" }}>
+                        <div className="relative bg-black rounded-xl md:rounded-2xl overflow-hidden mb-4 md:mb-6" style={{ aspectRatio: "16/9" }}>
                             {!recordedBlob ? (
                                 <video
                                     ref={videoRef}

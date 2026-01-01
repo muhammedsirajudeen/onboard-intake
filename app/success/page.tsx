@@ -9,6 +9,7 @@ import api from "@/lib/api";
 interface UserData {
     name: string;
     email: string;
+    picture?: string;
     hireableStatus?: 'hireable' | 'near_hireable' | 'unhireable' | 'not_assessed';
     strengths?: string[];
     weaknesses?: string[];
@@ -158,7 +159,7 @@ export default function SuccessPage() {
                         <span className="text-2xl font-bold tracking-tighter">Intake</span>
                         <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
-                    <UserProfile name={user.name} />
+                    <UserProfile name={user.name} picture={user.picture} />
                 </div>
             </nav>
 

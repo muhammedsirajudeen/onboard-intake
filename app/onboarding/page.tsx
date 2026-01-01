@@ -21,6 +21,7 @@ export default function OnboardingPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [userName, setUserName] = useState<string>("User"); // Default or fetched name
+    const [userPicture, setUserPicture] = useState<string | undefined>(undefined);
     const [socialLinks, setSocialLinks] = useState<SocialLinks>({
         github: "",
         gitlab: "",
@@ -37,8 +38,9 @@ export default function OnboardingPage() {
             try {
                 const response = await api.get("/api/user/profile");
                 if (response.data.success && response.data.user) {
-                    const { socialLinks, profileCompleted, videoRecorded, name } = response.data.user;
+                    const { socialLinks, profileCompleted, videoRecorded, name, picture } = response.data.user;
                     if (name) setUserName(name);
+                    if (picture) setUserPicture(picture);
 
                     // If both profile and video completed, redirect to success
                     if (profileCompleted && videoRecorded) {
@@ -181,7 +183,7 @@ export default function OnboardingPage() {
                         <span className="text-2xl font-bold tracking-tighter">Intake</span>
                         <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
-                    <UserProfile name={userName} />
+                    <UserProfile name={userName} picture={userPicture} />
                 </div>
             </nav>
 

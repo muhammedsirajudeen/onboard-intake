@@ -8,10 +8,11 @@ import api from "@/lib/api";
 
 interface UserProfileProps {
     name: string;
-    email?: string; // Optional email display
+    email?: string;
+    picture?: string;
 }
 
-export default function UserProfile({ name, email }: UserProfileProps) {
+export default function UserProfile({ name, email, picture }: UserProfileProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -45,9 +46,19 @@ export default function UserProfile({ name, email }: UserProfileProps) {
                     className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 outline-none"
                     aria-label="User menu"
                 >
-                    <div className="w-8 h-8 rounded-full bg-[#00D084]/10 text-[#00D084] flex items-center justify-center font-bold text-xs ring-2 ring-white">
-                        {getInitials(name)}
-                    </div>
+                    {picture ? (
+                        <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-white shadow-sm">
+                            <img
+                                src={picture}
+                                alt={name}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-8 h-8 rounded-full bg-[#00D084]/10 text-[#00D084] flex items-center justify-center font-bold text-xs ring-2 ring-white">
+                            {getInitials(name)}
+                        </div>
+                    )}
                     <span className="text-sm font-medium text-gray-700 hidden sm:block max-w-[150px] truncate">
                         {name}
                     </span>
