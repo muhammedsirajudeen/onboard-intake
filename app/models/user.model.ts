@@ -17,6 +17,9 @@ export interface IUser {
     picture?: string;
     socialLinks?: ISocialLinks;
     profileCompleted: boolean;
+    videoUrl?: string;
+    videoRecorded: boolean;
+    videoRecordedAt?: Date;
     createdAt: Date;
     updatedAt: Date;
     lastLoginAt: Date;
@@ -57,6 +60,17 @@ const UserSchema = new Schema<IUser>(
         profileCompleted: {
             type: Boolean,
             default: false,
+        },
+        videoUrl: {
+            type: String,
+            trim: true,
+        },
+        videoRecorded: {
+            type: Boolean,
+            default: false,
+        },
+        videoRecordedAt: {
+            type: Date,
         },
         lastLoginAt: {
             type: Date,

@@ -1,40 +1,46 @@
-import { SignJWT, jwtVerify } from 'jose';
+import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import type { Session, User } from '@/types/auth.types';
+import env from '@/app/utils/env.config';
 
-const SECRET_KEY = new TextEncoder().encode(
-    process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-);
-
-const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+const SESSION_DURATION_SECONDS = SESSION_DURATION / 1000; // 7 days in seconds
 
 export async function createSession(user: User): Promise<string> {
     const expiresAt = Date.now() + SESSION_DURATION;
 
-    const token = await new SignJWT({ user, expiresAt })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('7d')
-        .sign(SECRET_KEY);
+    const payload = {
+        user,
+        expiresAt,
+    };
+
+    const token = jwt.sign(payload, env.JWT_SECRET, {
+        expiresIn: SESSION_DURATION_SECONDS,
+        subject: user.id,
+        algorithm: 'HS256',
+    });
 
     return token;
 }
 
 export async function verifySession(token: string): Promise<Session | null> {
     try {
-        const { payload } = await jwtVerify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, env.JWT_SECRET, {
+            algorithms: ['HS256'],
+        }) as Session;
 
-        if (!payload.user || !payload.expiresAt) {
+        if (!decoded.user || !decoded.expiresAt) {
             return null;
         }
 
-        const session = payload as unknown as Session;
-
-        if (Date.now() > session.expiresAt) {
+        // Check if session has expired
+        if (Date.now() > decoded.expiresAt) {
             return null;
         }
 
-        return session;
+        return decoded;
     } catch (error) {
+        console.error('Session verification failed:', error);
         return null;
     }
 }
@@ -54,10 +60,10 @@ export async function setSessionCookie(token: string) {
     const cookieStore = await cookies();
 
     cookieStore.set('session', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: SESSION_DURATION / 1000,
+        httpOnly: true, // Prevents JavaScript access
+        secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+        sameSite: 'lax', // CSRF protection
+        maxAge: SESSION_DURATION_SECONDS,
         path: '/',
     });
 }

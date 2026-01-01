@@ -20,6 +20,11 @@ export default function SignInPage() {
             });
 
             if (data.success) {
+                console.log('✅ Authentication successful!');
+                console.log('📝 Token received:', data.token);
+                console.log('👤 User:', data.user);
+                console.log('✓ Profile completed:', data.profileCompleted);
+
                 // Check if profile is completed
                 if (data.profileCompleted) {
                     // Profile complete, go to home

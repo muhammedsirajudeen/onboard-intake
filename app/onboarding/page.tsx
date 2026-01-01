@@ -29,15 +29,65 @@ export default function OnboardingPage() {
     });
 
     useEffect(() => {
-        // Check if user is authenticated
-        const checkAuth = async () => {
+        // Check if user is authenticated and fetch profile
+        const checkAuthAndFetchProfile = async () => {
             try {
-                await api.get("/api/auth/session");
+                const response = await api.get("/api/user/profile");
+                if (response.data.success && response.data.user) {
+                    const { socialLinks, profileCompleted, videoRecorded } = response.data.user;
+
+                    // If both profile and video completed, redirect to success
+                    if (profileCompleted && videoRecorded) {
+                        router.push("/success");
+                        return;
+                    }
+
+                    // If profile is completed, pre-populate the form
+                    if (profileCompleted && socialLinks) {
+                        // Extract handles from URLs
+                        const extractHandle = (url: string, platform: string) => {
+                            if (!url) return "";
+                            try {
+                                const urlObj = new URL(url);
+                                const pathname = urlObj.pathname;
+
+                                switch (platform) {
+                                    case 'github':
+                                    case 'gitlab':
+                                    case 'devto':
+                                        return pathname.split('/').filter(Boolean)[0] || "";
+                                    case 'medium':
+                                        return pathname.replace('/@', '').split('/')[0] || "";
+                                    case 'twitter':
+                                    case 'linkedin':
+                                        const parts = pathname.split('/').filter(Boolean);
+                                        return parts[parts.length - 1] || "";
+                                    case 'website':
+                                        return url;
+                                    default:
+                                        return "";
+                                }
+                            } catch {
+                                return "";
+                            }
+                        };
+
+                        setSocialLinks({
+                            github: extractHandle(socialLinks.github || "", 'github'),
+                            gitlab: extractHandle(socialLinks.gitlab || "", 'gitlab'),
+                            medium: extractHandle(socialLinks.medium || "", 'medium'),
+                            devto: extractHandle(socialLinks.devto || "", 'devto'),
+                            twitter: extractHandle(socialLinks.twitter || "", 'twitter'),
+                            linkedin: extractHandle(socialLinks.linkedin || "", 'linkedin'),
+                            website: extractHandle(socialLinks.website || "", 'website'),
+                        });
+                    }
+                }
             } catch (err) {
                 router.push("/signin");
             }
         };
-        checkAuth();
+        checkAuthAndFetchProfile();
     }, [router]);
 
     const handleInputChange = (field: keyof SocialLinks, value: string) => {
@@ -106,8 +156,8 @@ export default function OnboardingPage() {
                 },
             });
 
-            // Redirect to home/dashboard after successful submission
-            router.push("/");
+            // Redirect to video recording after successful submission
+            router.push("/video-recording");
             router.refresh();
         } catch (err: any) {
             setError(err.response?.data?.error || "Failed to save profile. Please try again.");
@@ -326,16 +376,15 @@ export default function OnboardingPage() {
                             </div>
                         )}
 
-                        {/* Submit Button */}
+                        {/* Submit/Next Button */}
                         <div className="mt-8 pt-6 border-t border-gray-300">
                             <button
                                 type="submit"
                                 disabled={isLoading}
                                 className="w-full px-8 py-4 bg-[#00D084] text-white rounded-full font-semibold hover:bg-[#00B872] transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                             >
-                                {isLoading ? "Saving..." : "Complete Profile"}
+                                {isLoading ? "Saving..." : "Next: Record Video"}
                             </button>
-
                         </div>
                     </form>
 

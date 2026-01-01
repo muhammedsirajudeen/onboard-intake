@@ -16,7 +16,7 @@ async function getHandler() {
     await connectDB();
 
     const user = await User.findOne({ email: session.user.email }).select(
-        'name email picture socialLinks profileCompleted'
+        'name email picture socialLinks profileCompleted videoUrl videoRecorded videoRecordedAt'
     );
 
     if (!user) {
@@ -31,6 +31,9 @@ async function getHandler() {
             picture: user.picture,
             socialLinks: user.socialLinks || {},
             profileCompleted: user.profileCompleted,
+            videoUrl: user.videoUrl,
+            videoRecorded: user.videoRecorded,
+            videoRecordedAt: user.videoRecordedAt,
         },
     });
 }

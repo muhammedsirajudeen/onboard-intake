@@ -1,10 +1,59 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 
 export default function Home() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+
+  // Check auth status and redirect when user clicks CTA
+  const handleGetStarted = async () => {
+    setIsCheckingAuth(true);
+
+    try {
+      // Check if user is authenticated
+      const response = await api.get("/api/user/profile");
+
+      console.log('📊 Profile API Response:', response.data);
+
+      if (response.data.success && response.data.user) {
+        const { profileCompleted, videoRecorded } = response.data.user;
+
+        console.log('✅ Profile completed:', profileCompleted);
+        console.log('🎥 Video recorded:', videoRecorded);
+
+        // If both completed, go to success page
+        if (profileCompleted && videoRecorded) {
+          console.log('➡️ Redirecting to SUCCESS page');
+          router.push("/success");
+        }
+        // If only profile completed, go to video recording
+        else if (profileCompleted && !videoRecorded) {
+          console.log('➡️ Redirecting to VIDEO RECORDING page');
+          router.push("/video-recording");
+        }
+        // If neither completed, go to onboarding
+        else if (!profileCompleted) {
+          console.log('➡️ Redirecting to ONBOARDING page');
+          router.push("/onboarding");
+        }
+      } else {
+        // Not authenticated, go to sign in
+        console.log('➡️ Not authenticated, redirecting to SIGNIN');
+        router.push("/signin");
+      }
+    } catch (err) {
+      // Not authenticated or error, go to sign in
+      console.error('❌ Auth check error:', err);
+      router.push("/signin");
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +74,13 @@ export default function Home() {
             />
             <span className="font-bold text-xl">Signal</span>
           </div>
-          <a
-            href="/signin"
-            className="px-6 py-2 bg-[#00D084] text-white rounded-full font-medium hover:bg-[#00B872] transition-colors"
+          <button
+            onClick={handleGetStarted}
+            disabled={isCheckingAuth}
+            className="px-6 py-2 bg-[#00D084] text-white rounded-full font-medium hover:bg-[#00B872] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Get Started
-          </a>
+            {isCheckingAuth ? "Loading..." : "Get Started"}
+          </button>
         </div>
       </nav>
 
@@ -49,12 +99,13 @@ export default function Home() {
             This platform shows you why—and what to do about it.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="/signin"
-              className="px-8 py-4 bg-[#00D084] text-white rounded-full font-semibold hover:bg-[#00B872] transition-all hover:scale-105"
+            <button
+              onClick={handleGetStarted}
+              disabled={isCheckingAuth}
+              className="px-8 py-4 bg-[#00D084] text-white rounded-full font-semibold hover:bg-[#00B872] transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              See Your Signal
-            </a>
+              {isCheckingAuth ? "Loading..." : "See Your Signal"}
+            </button>
             <a
               href="#reality"
               className="px-8 py-4 border-2 border-gray-300 rounded-full font-semibold hover:border-[#00D084] transition-colors"
