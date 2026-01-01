@@ -212,9 +212,9 @@ export default function SuccessPage() {
                                     </h3>
 
                                     <div className="text-4xl font-black text-white mb-6">
-                                        {user.hireableStatus === 'unhireable' && "₹799"}
+                                        {user.hireableStatus === 'unhireable' && "₹1299"}
                                         {user.hireableStatus === 'near_hireable' && "₹999"}
-                                        {user.hireableStatus === 'hireable' && "₹1299"}
+                                        {user.hireableStatus === 'hireable' && "₹799"}
                                     </div>
 
                                     <div className="bg-white/10 rounded-xl p-4 mb-8 w-full backdrop-blur-sm border border-white/5">

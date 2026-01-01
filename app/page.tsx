@@ -125,8 +125,8 @@ export default function Home() {
                 If your fundamentals are shaky and you lack production mindset.
               </p>
               <div className="pt-6 border-t border-gray-100">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Get the Pack</p>
-                <p className="text-3xl font-bold text-gray-900">₹799</p>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Foundation Architect</p>
+                <p className="text-3xl font-bold text-gray-900">₹1299</p>
                 <p className="text-xs text-gray-500 mt-2">Foundation repair & core concepts.</p>
               </div>
             </div>
@@ -142,7 +142,7 @@ export default function Home() {
                 You have the basics but miss the nuance of senior engineering.
               </p>
               <div className="pt-6 border-t border-gray-100">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Get the Pack</p>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Senior Engineer Mindset</p>
                 <p className="text-3xl font-bold text-gray-900">₹999</p>
                 <p className="text-xs text-gray-500 mt-2">Advanced patterns & system design.</p>
               </div>
@@ -159,8 +159,8 @@ export default function Home() {
                 You are ready. Now we amplify your signal to top companies.
               </p>
               <div className="pt-6 border-t border-gray-100">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Get the Pack</p>
-                <p className="text-3xl font-bold text-gray-900">₹1299</p>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">1% Engineer Club</p>
+                <p className="text-3xl font-bold text-gray-900">₹799</p>
                 <p className="text-xs text-gray-500 mt-2">Career acceleration & elite networking.</p>
               </div>
             </div>

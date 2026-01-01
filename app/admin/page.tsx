@@ -27,6 +27,8 @@ interface User {
     strengths?: string[];
     weaknesses?: string[];
     createdAt: string;
+    emailSent?: boolean;
+    emailSentAt?: string;
 }
 
 interface Pagination {
@@ -165,6 +167,7 @@ export default function AdminDashboard() {
         setIsSendingEmail(true);
         try {
             const result = await sendAssessmentEmail({
+                userId: emailConfirmUser._id,
                 to: emailConfirmUser.email,
                 userName: emailConfirmUser.name,
                 hireableStatus: emailConfirmUser.hireableStatus || 'not_assessed',
@@ -174,6 +177,8 @@ export default function AdminDashboard() {
 
             if (result.success) {
                 alert(`Email successfully sent to ${emailConfirmUser.email}`);
+                // Refresh list to update status UI
+                fetchUsers();
             } else {
                 alert(`Failed to send email: ${result.error}`);
             }
@@ -311,12 +316,18 @@ export default function AdminDashboard() {
                                                         Video ✓
                                                     </span>
                                                 )}
-                                                <button
-                                                    onClick={() => setEmailConfirmUser(user)}
-                                                    className="px-3 py-1 bg-gray-800 text-white text-xs font-semibold rounded-lg hover:bg-gray-900 flex items-center gap-1"
-                                                >
-                                                    ✉️ Send Mail
-                                                </button>
+                                                {user.emailSent ? (
+                                                    <span className="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-semibold rounded-lg flex items-center gap-1 border border-gray-200">
+                                                        Email Sent ✓
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => setEmailConfirmUser(user)}
+                                                        className="px-3 py-1 bg-gray-800 text-white text-xs font-semibold rounded-lg hover:bg-gray-900 flex items-center gap-1"
+                                                    >
+                                                        ✉️ Send Mail
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
 

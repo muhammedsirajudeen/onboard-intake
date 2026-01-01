@@ -3,13 +3,18 @@
 import nodemailer from 'nodemailer';
 import env from '@/app/utils/env.config';
 
+import User from '@/app/models/user.model';
+import connectDB from '@/lib/mongodb';
+
 interface SendAssessmentEmailProps {
+    userId: string;
     to: string;
     userName: string;
     hireableStatus: string;
     strengths?: string[];
     weaknesses?: string[];
 }
+
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -20,6 +25,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendAssessmentEmail({
+    userId,
     to,
     userName,
     hireableStatus,
@@ -27,6 +33,15 @@ export async function sendAssessmentEmail({
     weaknesses = [],
 }: SendAssessmentEmailProps) {
     try {
+        await connectDB();
+
+        // Check if email already sent
+        const user = await User.findById(userId);
+        if (user?.emailSent) {
+            console.log(`⚠️ Email already sent to ${to} (userId: ${userId}). Aborting.`);
+            return { success: false, error: 'Email already sent to this user.' };
+        }
+
         console.log(`📧 Sending assessment email to ${to} for ${userName}`);
 
         const getStatusText = (status: string) => {
@@ -61,7 +76,7 @@ export async function sendAssessmentEmail({
                 case 'hireable':
                     return {
                         name: "1% Engineer Club",
-                        price: "₹1299",
+                        price: "₹799",
                         outcome: "Direct referrals, salary negotiation, and access to elite networking."
                     };
                 case 'near_hireable':
@@ -74,7 +89,7 @@ export async function sendAssessmentEmail({
                 default:
                     return {
                         name: "Foundation Architect",
-                        price: "₹799",
+                        price: "₹1299",
                         outcome: "Master the basics and build your first real project. Stop copying tutorials."
                     };
             }
@@ -83,6 +98,8 @@ export async function sendAssessmentEmail({
         const statusText = getStatusText(hireableStatus);
         const statusColor = getStatusColor(hireableStatus);
         const statusBg = getStatusBgColor(hireableStatus);
+        const safeStrengths = Array.isArray(strengths) ? strengths : [];
+        const safeWeaknesses = Array.isArray(weaknesses) ? weaknesses : [];
         const program = getProgramDetails(hireableStatus);
 
         const htmlContent = `
@@ -106,12 +123,13 @@ export async function sendAssessmentEmail({
                     .status-desc { font-size: 14px; color: #4b5563; max-width: 280px; margin: 0 auto; }
 
                     .cta-card { background-color: #111827; border-radius: 16px; padding: 32px 24px; text-align: center; color: #ffffff; margin-bottom: 32px; }
-                    .cta-program { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+                    .cta-program { font-size: 20px; font-weight: 700; margin-bottom: 4px; color: #ffffff; }
                     .cta-price { font-size: 32px; font-weight: 900; margin-bottom: 16px; color: #ffffff; }
                     .cta-outcome-box { background-color: rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left; }
-                    .cta-outcome-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; font-weight: 700; display: block; margin-bottom: 4px; }
-                    .cta-outcome-text { font-size: 14px; line-height: 1.4; color: #f3f4f6; }
-                    .cta-button { display: block; width: 100%; background-color: #00D084; color: #ffffff; font-weight: 700; text-decoration: none; padding: 16px; border-radius: 50px; text-align: center; font-size: 16px; }
+                    .cta-outcome-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #d1d5db; font-weight: 700; display: block; margin-bottom: 4px; }
+                    .cta-outcome-text { font-size: 14px; line-height: 1.4; color: #ffffff; }
+                    .cta-button { display: inline-block; width: auto; min-width: 200px; max-width: 100%; background-color: #00D084; color: #ffffff !important; font-weight: 700; text-decoration: none; padding: 16px 32px; border-radius: 50px; text-align: center; font-size: 16px; box-sizing: border-box; }
+
                     
                     .section-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #f3f4f6; }
                     .feedback-grid { margin-bottom: 32px; }
@@ -151,17 +169,57 @@ export async function sendAssessmentEmail({
                             <a href="https://wa.me/9526965228" class="cta-button">Join Exclusive Program</a>
                         </div>
 
-                        ${strengths.length > 0 ? `
-                            <div class="feedback-grid">
-                                <div class="section-title">Identified Strengths</div>
-                                ${strengths.map(s => `<div class="feedback-item strength">${s}</div>`).join('')}
+                        <!-- Strengths Section -->
+                        ${safeStrengths.length > 0 ? `
+                            <div style="background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                                <div style="border-bottom: 1px solid #f3f4f6; padding-bottom: 12px; margin-bottom: 16px;">
+                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                        <tr>
+                                            <td width="40" valign="middle">
+                                                <div style="width: 32px; height: 32px; background-color: #ecfdf5; border-radius: 8px; text-align: center; line-height: 32px;">
+                                                    <span style="color: #059669; font-size: 18px; font-weight: bold;">✓</span>
+                                                </div>
+                                            </td>
+                                            <td valign="middle">
+                                                <span style="font-size: 16px; font-weight: 700; color: #111827;">Identified Strengths</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    ${safeStrengths.map(s => `
+                                        <div style="background-color: #f9fafb; padding: 12px 16px; border-radius: 8px; border: 1px solid #f3f4f6; color: #374151; font-size: 14px; margin-bottom: 8px; line-height: 1.5;">
+                                            <span style="color: #059669; font-weight: bold; margin-right: 8px;">•</span>${s}
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                         ` : ''}
 
-                        ${weaknesses.length > 0 ? `
-                            <div class="feedback-grid">
-                                <div class="section-title">Critical Gaps</div>
-                                ${weaknesses.map(w => `<div class="feedback-item weakness">${w}</div>`).join('')}
+                        <!-- Weaknesses Section -->
+                        ${safeWeaknesses.length > 0 ? `
+                            <div style="background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                                <div style="border-bottom: 1px solid #f3f4f6; padding-bottom: 12px; margin-bottom: 16px;">
+                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                        <tr>
+                                            <td width="40" valign="middle">
+                                                <div style="width: 32px; height: 32px; background-color: #fff1f2; border-radius: 8px; text-align: center; line-height: 32px;">
+                                                    <span style="color: #e11d48; font-size: 18px; font-weight: bold;">!</span>
+                                                </div>
+                                            </td>
+                                            <td valign="middle">
+                                                <span style="font-size: 16px; font-weight: 700; color: #111827;">Critical Gaps</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    ${safeWeaknesses.map(w => `
+                                        <div style="background-color: #f9fafb; padding: 12px 16px; border-radius: 8px; border: 1px solid #f3f4f6; color: #374151; font-size: 14px; margin-bottom: 8px; border-left: 3px solid #e11d48; line-height: 1.5;">
+                                            ${w}
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                         ` : ''}
 
@@ -183,7 +241,13 @@ export async function sendAssessmentEmail({
             html: htmlContent,
         });
 
-        console.log('✅ Email sent successfully');
+        // Update user status
+        await User.findByIdAndUpdate(userId, {
+            emailSent: true,
+            emailSentAt: new Date(),
+        });
+
+        console.log('✅ Email sent successfully and status updated');
         return { success: true };
     } catch (error) {
         console.error('❌ Error sending email:', error);

@@ -37,7 +37,7 @@ async function getHandler(request: NextRequest) {
 
     // Get paginated users
     const users = await User.find(query)
-        .select('name email picture socialLinks videoUrl videoRecorded videoRecordedAt profileCompleted hireableStatus strengths weaknesses createdAt')
+        .select('name email picture socialLinks videoUrl videoRecorded videoRecordedAt profileCompleted hireableStatus strengths weaknesses createdAt emailSent emailSentAt')
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)

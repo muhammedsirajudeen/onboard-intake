@@ -26,6 +26,8 @@ export interface IUser {
     createdAt: Date;
     updatedAt: Date;
     lastLoginAt: Date;
+    emailSent?: boolean;
+    emailSentAt?: Date;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -89,6 +91,13 @@ const UserSchema = new Schema<IUser>(
         lastLoginAt: {
             type: Date,
             default: Date.now,
+        },
+        emailSent: {
+            type: Boolean,
+            default: false,
+        },
+        emailSentAt: {
+            type: Date,
         },
     },
     {
