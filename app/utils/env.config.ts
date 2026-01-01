@@ -7,6 +7,9 @@ interface Env {
     AWS_REGION: string
     S3_BUCKET_NAME: string
     JWT_SECRET: string
+    ADMIN_PASSWORD: string
+    APP_PASSWORD: string
+    GMAIL: string
 }
 
 const env: Env = {
@@ -18,6 +21,9 @@ const env: Env = {
     AWS_REGION: process.env.AWS_REGION!,
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME!,
     JWT_SECRET: process.env.JWT_SECRET!,
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD!,
+    APP_PASSWORD: process.env.APP_PASSWORD!,
+    GMAIL: process.env.GMAIL!,
 }
 
 export default env

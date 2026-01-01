@@ -23,10 +23,10 @@ export default function SuccessPage() {
                     <div className="flex items-center gap-2">
                         <img
                             src="/onboard.png"
-                            alt="Signal Logo"
+                            alt="Intake Logo"
                             className="w-10 h-10 object-contain"
                         />
-                        <span className="font-bold text-xl">Signal</span>
+                        <span className="font-bold text-xl">Intake</span>
                     </div>
                 </div>
             </nav>

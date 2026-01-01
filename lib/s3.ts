@@ -52,6 +52,28 @@ export async function getVideoUrl(userEmail: string): Promise<string> {
 }
 
 /**
+ * Get presigned URL from S3 key or URL
+ * @param s3KeyOrUrl - S3 key or full S3 URL
+ * @returns Presigned URL for access
+ */
+export async function getPresignedUrlFromKey(s3KeyOrUrl: string): Promise<string> {
+    // Extract key from URL if full URL is provided
+    let key = s3KeyOrUrl;
+    if (s3KeyOrUrl.includes('amazonaws.com/')) {
+        key = s3KeyOrUrl.split('amazonaws.com/')[1];
+    }
+
+    const command = new GetObjectCommand({
+        Bucket: env.S3_BUCKET_NAME,
+        Key: key,
+    });
+
+    // Generate signed URL valid for 1 hour
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    return signedUrl;
+}
+
+/**
  * Delete video from S3
  * @param userEmail - User's email
  */

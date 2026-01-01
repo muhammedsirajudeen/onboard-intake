@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Signal - Build Your Engineering Signal",
-  description: "A structured framework for building signal, not credentials. For engineers who respect reality.",
+  title: "Intake - Build Your Engineering Signal",
+  description: "Powered by Beyond Technologies Private Limited. A structured framework for building signal, not credentials.",
   icons: {
     icon: "/favicon.png",
   },

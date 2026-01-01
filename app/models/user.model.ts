@@ -20,6 +20,9 @@ export interface IUser {
     videoUrl?: string;
     videoRecorded: boolean;
     videoRecordedAt?: Date;
+    hireableStatus?: 'hireable' | 'near_hireable' | 'unhireable' | 'not_assessed';
+    strengths?: string[];
+    weaknesses?: string[];
     createdAt: Date;
     updatedAt: Date;
     lastLoginAt: Date;
@@ -72,6 +75,17 @@ const UserSchema = new Schema<IUser>(
         videoRecordedAt: {
             type: Date,
         },
+        hireableStatus: {
+            type: String,
+            enum: ['hireable', 'near_hireable', 'unhireable', 'not_assessed'],
+            default: 'not_assessed',
+        },
+        strengths: [{
+            type: String,
+        }],
+        weaknesses: [{
+            type: String,
+        }],
         lastLoginAt: {
             type: Date,
             default: Date.now,

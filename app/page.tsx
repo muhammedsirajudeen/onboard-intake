@@ -69,10 +69,10 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <img
               src="/onboard.png"
-              alt="Signal Logo"
+              alt="Intake Logo"
               className="w-15 h-15 object-contain"
             />
-            <span className="font-bold text-xl">Signal</span>
+            <span className="font-bold text-xl">Intake</span>
           </div>
           <button
             onClick={handleGetStarted}
@@ -455,7 +455,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-12 px-6 bg-gray-900 text-gray-400 text-center">
-        <p>© 2026 Signal. Built for engineers who respect reality.</p>
+        <p>© 2026 Intake. Powered by Beyond Technologies Private Limited.</p>
       </footer>
     </div>
   );
