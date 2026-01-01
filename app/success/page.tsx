@@ -227,7 +227,7 @@ export default function SuccessPage() {
                                     </div>
 
                                     <a
-                                        href="https://wa.me/9526965228"
+                                        href="https://wa.me/9526965228?text=Join%20Exclusive%20Program"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#00D084] text-white rounded-full font-bold text-base tracking-wide hover:bg-[#00B872] transition-all shadow-lg shadow-[#00D084]/25"

@@ -311,7 +311,7 @@ export default function VideoRecordingPage() {
 
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center px-6 pt-24 pb-12">
-                <div className="max-w-4xl w-full">
+                <div className="max-w-6xl w-full">
                     {/* Header */}
                     <div className="text-center mb-8">
                         <div className="inline-block mb-4 px-4 py-2 bg-[#00D084]/10 rounded-full text-sm font-medium text-[#00D084]">

@@ -166,7 +166,7 @@ export async function sendAssessmentEmail({
                                 <span class="cta-outcome-text">${program.outcome}</span>
                             </div>
 
-                            <a href="https://wa.me/9526965228" class="cta-button">Join Exclusive Program</a>
+                            <a href="https://wa.me/9526965228?text=Join%20Exclusive%20Program" class="cta-button">Join Exclusive Program</a>
                         </div>
 
                         <!-- Strengths Section -->
