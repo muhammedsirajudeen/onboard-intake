@@ -52,13 +52,9 @@ export default function SignInPage() {
             {/* Navigation */}
             <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
                 <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-                    <a href="/" className="flex items-center gap-2">
-                        <img
-                            src="/onboard.png"
-                            alt="Intake Logo"
-                            className="w-10 h-10 object-contain"
-                        />
-                        <span className="font-bold text-xl">Intake</span>
+                    <a href="/" className="flex flex-col leading-none">
+                        <span className="text-2xl font-bold tracking-tighter">Intake</span>
+                        <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </a>
                     <a
                         href="/"
@@ -70,8 +66,8 @@ export default function SignInPage() {
             </nav>
 
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center px-6 pt-24 pb-12">
-                <div className="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
+            <div className="flex-1 flex items-center justify-center px-6 pt-20 md:pt-24 pb-12">
+                <div className="max-w-4xl w-full flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                     {/* Left Side - Messaging */}
                     <div className="space-y-6">
                         <div className="inline-block px-4 py-2 bg-[#00D084]/10 rounded-full text-sm font-medium text-[#00D084]">

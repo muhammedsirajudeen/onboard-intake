@@ -34,88 +34,142 @@ export async function sendAssessmentEmail({
                 case 'hireable': return 'Hireable';
                 case 'near_hireable': return 'Near Hireable';
                 case 'unhireable': return 'Unhireable';
-                default: return 'Not Assessed';
+                default: return 'Pending Review';
             }
         };
 
         const getStatusColor = (status: string) => {
             switch (status) {
-                case 'hireable': return '#16a34a'; // green-600
-                case 'near_hireable': return '#ca8a04'; // yellow-600
-                case 'unhireable': return '#dc2626'; // red-600
+                case 'hireable': return '#059669'; // emerald-600
+                case 'near_hireable': return '#d97706'; // amber-600
+                case 'unhireable': return '#e11d48'; // rose-600
                 default: return '#4b5563'; // gray-600
+            }
+        };
+
+        const getStatusBgColor = (status: string) => {
+            switch (status) {
+                case 'hireable': return '#ecfdf5'; // emerald-50
+                case 'near_hireable': return '#fffbeb'; // amber-50
+                case 'unhireable': return '#fff1f2'; // rose-50
+                default: return '#f9fafb'; // gray-50
+            }
+        };
+
+        const getProgramDetails = (status: string) => {
+            switch (status) {
+                case 'hireable':
+                    return {
+                        name: "1% Engineer Club",
+                        price: "₹1299",
+                        outcome: "Direct referrals, salary negotiation, and access to elite networking."
+                    };
+                case 'near_hireable':
+                    return {
+                        name: "Senior Engineer Mindset",
+                        price: "₹999",
+                        outcome: "Learn system design, advanced patterns, and how to unblock yourself."
+                    };
+                case 'unhireable':
+                default:
+                    return {
+                        name: "Foundation Architect",
+                        price: "₹799",
+                        outcome: "Master the basics and build your first real project. Stop copying tutorials."
+                    };
             }
         };
 
         const statusText = getStatusText(hireableStatus);
         const statusColor = getStatusColor(hireableStatus);
+        const statusBg = getStatusBgColor(hireableStatus);
+        const program = getProgramDetails(hireableStatus);
 
         const htmlContent = `
             <!DOCTYPE html>
             <html>
             <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                 <style>
-                    body { font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; }
-                    .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px; }
-                    .header { text-align: center; margin-bottom: 30px; }
-                    .logo { font-size: 24px; font-weight: bold; color: #000; }
-                    .status-box { padding: 20px; background-color: #f9fafb; border-radius: 8px; margin-bottom: 24px; text-align: center; }
-                    .status-label { font-size: 14px; color: #6b7280; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-                    .status-value { font-size: 24px; font-weight: bold; color: ${statusColor}; }
-                    .section { margin-bottom: 24px; }
-                    .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; }
-                    .list-item { margin-bottom: 8px; padding-left: 12px; border-left: 3px solid #e5e7eb; }
-                    .strength-item { border-left-color: #16a34a; }
-                    .weakness-item { border-left-color: #dc2626; }
-                    .footer { text-align: center; font-size: 12px; color: #9ca3af; margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 20px; }
+                    body { font-family: 'Arial', sans-serif; line-height: 1.6; color: #111827; margin: 0; padding: 0; background-color: #f3f4f6; }
+                    .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+                    .header { padding: 24px; text-align: center; border-bottom: 1px solid #f3f4f6; }
+                    .logo-main { font-size: 24px; font-weight: 800; color: #111827; line-height: 1; display: block; }
+                    .logo-sub { font-size: 10px; color: #00D084; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-top: -2px; }
+                    
+                    .content { padding: 32px 24px; }
+                    .greeting { font-size: 16px; margin-bottom: 24px; color: #374151; }
+                    
+                    .status-card { background-color: ${statusBg}; border: 1px solid ${statusColor}30; border-radius: 12px; padding: 32px; text-align: center; margin-bottom: 32px; }
+                    .status-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 8px; background: rgba(255,255,255,0.5); display: inline-block; padding: 4px 12px; border-radius: 100px; }
+                    .status-value { font-size: 36px; font-weight: 900; color: ${statusColor}; line-height: 1.1; margin: 12px 0 8px; letter-spacing: -1px; }
+                    .status-desc { font-size: 14px; color: #4b5563; max-width: 280px; margin: 0 auto; }
+
+                    .cta-card { background-color: #111827; border-radius: 16px; padding: 32px 24px; text-align: center; color: #ffffff; margin-bottom: 32px; }
+                    .cta-program { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+                    .cta-price { font-size: 32px; font-weight: 900; margin-bottom: 16px; color: #ffffff; }
+                    .cta-outcome-box { background-color: rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left; }
+                    .cta-outcome-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; font-weight: 700; display: block; margin-bottom: 4px; }
+                    .cta-outcome-text { font-size: 14px; line-height: 1.4; color: #f3f4f6; }
+                    .cta-button { display: block; width: 100%; background-color: #00D084; color: #ffffff; font-weight: 700; text-decoration: none; padding: 16px; border-radius: 50px; text-align: center; font-size: 16px; }
+                    
+                    .section-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #f3f4f6; }
+                    .feedback-grid { margin-bottom: 32px; }
+                    .feedback-item { background-color: #f9fafb; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; color: #374151; }
+                    .feedback-item.strength { border-left: 4px solid #059669; }
+                    .feedback-item.weakness { border-left: 4px solid #e11d48; }
+
+                    .footer { text-align: center; font-size: 12px; color: #9ca3af; padding: 24px; background-color: #f9fafb; border-top: 1px solid #e5e7eb; }
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <div class="logo">Intake</div>
-                        <p style="font-size: 12px; color: #666;">powered by Beyond Technologies Private Limited</p>
-                        <p style="margin-top: 15px;">Feedback on your profile and submission</p>
+                        <span class="logo-main">Intake</span>
+                        <span class="logo-sub">by onboard</span>
                     </div>
 
-                    <p>Hi ${userName},</p>
-                    <p>We've reviewed your profile and video submission. Here is our assessment of your current hireability status along with specific feedback.</p>
+                    <div class="content">
+                        <p class="greeting">Hi ${userName},</p>
+                        <p style="color: #6b7280; margin-bottom: 24px;">Your implementation has been reviewed. Here is your official signal report.</p>
 
-                    <div class="status-box">
-                        <div class="status-label">Current Status</div>
-                        <div class="status-value">${statusText}</div>
-                    </div>
-
-                    ${strengths.length > 0 ? `
-                        <div class="section">
-                            <div class="section-title">Key Strengths</div>
-                            ${strengths.map(s => `<div class="list-item strength-item">${s}</div>`).join('')}
+                        <div class="status-card">
+                            <div class="status-label">Official Status</div>
+                            <div class="status-value">${statusText}</div>
                         </div>
-                    ` : ''}
 
-                    ${weaknesses.length > 0 ? `
-                        <div class="section">
-                            <div class="section-title">Areas for Improvement</div>
-                            ${weaknesses.map(w => `<div class="list-item weakness-item">${w}</div>`).join('')}
+                        <div class="cta-card">
+                            <div style="font-size: 10px; font-weight: 700; color: #00D084; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Recommended Program</div>
+                            <div class="cta-program">${program.name}</div>
+                            <div class="cta-price">${program.price}</div>
+                            
+                            <div class="cta-outcome-box">
+                                <span class="cta-outcome-label">The Outcome</span>
+                                <span class="cta-outcome-text">${program.outcome}</span>
+                            </div>
+
+                            <a href="https://wa.me/9526965228" class="cta-button">Join Exclusive Program</a>
                         </div>
-                    ` : ''}
 
-                    ${weaknesses.length > 0 ? `
-                        <div class="section">
-                            <div class="section-title">Areas for Improvement</div>
-                            ${weaknesses.map(w => `<div class="list-item weakness-item">${w}</div>`).join('')}
-                        </div>
-                    ` : ''}
+                        ${strengths.length > 0 ? `
+                            <div class="feedback-grid">
+                                <div class="section-title">Identified Strengths</div>
+                                ${strengths.map(s => `<div class="feedback-item strength">${s}</div>`).join('')}
+                            </div>
+                        ` : ''}
 
-                    <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-                        <p style="margin-bottom: 15px; font-weight: bold; color: #16a34a;">Want to accelerate your growth?</p>
-                        <a href="https://wa.me/9526965228" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
-                            Join Our Exclusive Program on WhatsApp
-                        </a>
+                        ${weaknesses.length > 0 ? `
+                            <div class="feedback-grid">
+                                <div class="section-title">Critical Gaps</div>
+                                ${weaknesses.map(w => `<div class="feedback-item weakness">${w}</div>`).join('')}
+                            </div>
+                        ` : ''}
+
                     </div>
 
                     <div class="footer">
-                        <p>This is an automated message from the Intake team.</p>
+                        <p>&copy; 2026 Intake. All rights reserved.</p>
+                        <p>Powered by Beyond Technologies Private Limited</p>
                     </div>
                 </div>
             </body>
@@ -125,7 +179,7 @@ export async function sendAssessmentEmail({
         await transporter.sendMail({
             from: `"Intake Team" <${env.GMAIL}>`,
             to,
-            subject: `Your Intake Assessment Results: ${statusText}`,
+            subject: `Your Intake Signal: ${statusText}`,
             html: htmlContent,
         });
 

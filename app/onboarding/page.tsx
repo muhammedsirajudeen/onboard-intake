@@ -172,13 +172,9 @@ export default function OnboardingPage() {
             {/* Navigation */}
             <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
                 <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <img
-                            src="/onboard.png"
-                            alt="Intake Logo"
-                            className="w-10 h-10 object-contain"
-                        />
-                        <span className="font-bold text-xl">Intake</span>
+                    <div className="flex flex-col leading-none">
+                        <span className="text-2xl font-bold tracking-tighter">Intake</span>
+                        <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
                 </div>
             </nav>

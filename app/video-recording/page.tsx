@@ -244,11 +244,11 @@ export default function VideoRecordingPage() {
                 </li>
                 <li className="flex items-start gap-2">
                     <span className="text-[#00D084] font-bold">2.</span>
-                    <span>Introduce yourself and share your technical background</span>
+                    <span>Introduce yourself briefly</span>
                 </li>
                 <li className="flex items-start gap-2">
                     <span className="text-[#00D084] font-bold">3.</span>
-                    <span>Discuss your recent projects and technical challenges you've solved</span>
+                    <span>Talk about a <strong>technical decision</strong>, a <strong>technical win</strong>, and a <strong>technical failure</strong> you had recently</span>
                 </li>
                 <li className="flex items-start gap-2">
                     <span className="text-[#00D084] font-bold">4.</span>
@@ -269,13 +269,9 @@ export default function VideoRecordingPage() {
             {/* Navigation */}
             <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
                 <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <img
-                            src="/onboard.png"
-                            alt="Intake Logo"
-                            className="w-10 h-10 object-contain"
-                        />
-                        <span className="font-bold text-xl">Intake</span>
+                    <div className="flex flex-col leading-none">
+                        <span className="text-2xl font-bold tracking-tighter">Intake</span>
+                        <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
                     <button
                         onClick={() => router.push("/onboarding")}
@@ -325,7 +321,7 @@ export default function VideoRecordingPage() {
                             <span className="text-[#00D084]">Video</span> Introduction
                         </h1>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Record a brief video introducing yourself and your technical experience
+                            Share your recent technical decisions, wins, and failures
                         </p>
                     </div>
 
