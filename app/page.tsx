@@ -21,12 +21,12 @@ export default function Home() {
             <img
               src="/onboard.png"
               alt="Signal Logo"
-              className="w-10 h-10 object-contain"
+              className="w-15 h-15 object-contain"
             />
             <span className="font-bold text-xl">Signal</span>
           </div>
           <a
-            href="#opt-in"
+            href="/signin"
             className="px-6 py-2 bg-[#00D084] text-white rounded-full font-medium hover:bg-[#00B872] transition-colors"
           >
             Get Started
@@ -50,7 +50,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
-              href="#opt-in"
+              href="/signin"
               className="px-8 py-4 bg-[#00D084] text-white rounded-full font-semibold hover:bg-[#00B872] transition-all hover:scale-105"
             >
               See Your Signal
