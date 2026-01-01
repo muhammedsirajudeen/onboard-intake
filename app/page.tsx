@@ -18,9 +18,11 @@ export default function Home() {
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#00D084] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">S</span>
-            </div>
+            <img
+              src="/onboard.png"
+              alt="Signal Logo"
+              className="w-10 h-10 object-contain"
+            />
             <span className="font-bold text-xl">Signal</span>
           </div>
           <a
