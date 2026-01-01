@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import BackButton from "@/components/back-button";
+import UserProfile from "@/components/user-profile";
 import api from "@/lib/api";
 
 interface UserData {
@@ -151,13 +153,12 @@ export default function SuccessPage() {
         <div className="min-h-screen bg-[#FAFAFA] flex flex-col font-sans">
             <nav className="sticky top-0 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 z-50">
                 <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+                    <BackButton />
                     <div className="flex flex-col leading-none">
                         <span className="text-2xl font-bold tracking-tighter">Intake</span>
                         <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
-                    <div className="text-sm font-medium text-gray-500">
-                        {user.name}
-                    </div>
+                    <UserProfile name={user.name} />
                 </div>
             </nav>
 

@@ -3,12 +3,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import BackButton from "@/components/back-button";
+import UserProfile from "@/components/user-profile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function VideoRecordingPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
+    const [userName, setUserName] = useState<string>("User");
     const [showInstructions, setShowInstructions] = useState(true);
     const [isRecording, setIsRecording] = useState(false);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
@@ -63,7 +66,8 @@ export default function VideoRecordingPage() {
             try {
                 const response = await api.get("/api/user/profile");
                 if (response.data.success && response.data.user) {
-                    const { videoRecorded } = response.data.user;
+                    const { videoRecorded, name } = response.data.user;
+                    if (name) setUserName(name);
 
                     // If video already recorded, redirect to success
                     if (videoRecorded) {
@@ -269,16 +273,12 @@ export default function VideoRecordingPage() {
             {/* Navigation */}
             <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
                 <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+                    <BackButton href="/onboarding" />
                     <div className="flex flex-col leading-none">
                         <span className="text-2xl font-bold tracking-tighter">Intake</span>
                         <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
-                    <button
-                        onClick={() => router.push("/onboarding")}
-                        className="text-gray-600 hover:text-gray-900 transition-colors"
-                    >
-                        ← Back
-                    </button>
+                    <UserProfile name={userName} />
                 </div>
             </nav>
 

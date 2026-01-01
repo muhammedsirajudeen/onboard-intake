@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import BackButton from "@/components/back-button";
+import UserProfile from "@/components/user-profile";
 import api from "@/lib/api";
 
 interface SocialLinks {
@@ -18,6 +20,7 @@ export default function OnboardingPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string>("User"); // Default or fetched name
     const [socialLinks, setSocialLinks] = useState<SocialLinks>({
         github: "",
         gitlab: "",
@@ -34,7 +37,8 @@ export default function OnboardingPage() {
             try {
                 const response = await api.get("/api/user/profile");
                 if (response.data.success && response.data.user) {
-                    const { socialLinks, profileCompleted, videoRecorded } = response.data.user;
+                    const { socialLinks, profileCompleted, videoRecorded, name } = response.data.user;
+                    if (name) setUserName(name);
 
                     // If both profile and video completed, redirect to success
                     if (profileCompleted && videoRecorded) {
@@ -172,10 +176,12 @@ export default function OnboardingPage() {
             {/* Navigation */}
             <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
                 <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+                    <BackButton />
                     <div className="flex flex-col leading-none">
                         <span className="text-2xl font-bold tracking-tighter">Intake</span>
                         <span className="text-[10px] text-[#00D084] font-medium tracking-wide text-right -mt-1">by onboard</span>
                     </div>
+                    <UserProfile name={userName} />
                 </div>
             </nav>
 
