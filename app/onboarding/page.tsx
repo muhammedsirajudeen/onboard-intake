@@ -192,8 +192,8 @@ export default function OnboardingPage() {
                 },
             });
 
-            // Redirect to video recording after successful submission
-            router.push("/video-recording");
+            // Redirect to audio recording after successful submission
+            router.push("/audio-recording");
             router.refresh();
         } catch (err: any) {
             setError(err.response?.data?.error || "Failed to save profile. Please try again.");
@@ -246,9 +246,9 @@ export default function OnboardingPage() {
                                     type="button"
                                     onClick={handleSkipGithub}
                                     disabled={isLoading}
-                                    className="px-6 py-2.5 bg-yellow-400 text-gray-900 rounded-full font-semibold text-sm hover:bg-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                                    className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-full font-semibold text-sm hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap border-2 border-gray-300 hover:border-gray-400"
                                 >
-                                    Skip - I'm a Beginner
+                                    No GitHub
                                 </button>
                             </div>
                         </div>
@@ -435,7 +435,7 @@ export default function OnboardingPage() {
                                 disabled={isLoading}
                                 className="w-full px-8 py-4 bg-[#00D084] text-white rounded-full font-semibold hover:bg-[#00B872] transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                             >
-                                {isLoading ? "Saving..." : "Next: Record Video"}
+                                {isLoading ? "Saving..." : "Next: Record Audio"}
                             </button>
                         </div>
                     </form>

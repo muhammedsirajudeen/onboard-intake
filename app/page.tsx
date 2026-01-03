@@ -21,10 +21,10 @@ export default function Home() {
       console.log('📊 Profile API Response:', response.data);
 
       if (response.data.success && response.data.user) {
-        const { profileCompleted, videoRecorded, isBeginnerLevel } = response.data.user;
+        const { profileCompleted, audioRecorded, isBeginnerLevel } = response.data.user;
 
         console.log('✅ Profile completed:', profileCompleted);
-        console.log('🎥 Video recorded:', videoRecorded);
+        console.log('🎵 Audio recorded:', audioRecorded);
         console.log('👶 Is beginner:', isBeginnerLevel);
 
         // If user is beginner level, redirect to beginner page
@@ -33,14 +33,14 @@ export default function Home() {
           router.push("/beginner");
         }
         // If both completed, go to success page
-        else if (profileCompleted && videoRecorded) {
+        else if (profileCompleted && audioRecorded) {
           console.log('➡️ Redirecting to SUCCESS page');
           router.push("/success");
         }
-        // If only profile completed, go to video recording
-        else if (profileCompleted && !videoRecorded) {
-          console.log('➡️ Redirecting to VIDEO RECORDING page');
-          router.push("/video-recording");
+        // If only profile completed, go to audio recording
+        else if (profileCompleted && !audioRecorded) {
+          console.log('➡️ Redirecting to AUDIO RECORDING page');
+          router.push("/audio-recording");
         }
         // If neither completed, go to onboarding
         else if (!profileCompleted) {

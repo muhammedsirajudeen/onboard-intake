@@ -12,19 +12,19 @@ const s3Client = new S3Client({
 });
 
 /**
- * Upload video to S3
- * @param videoBuffer - Video file buffer
+ * Upload audio to S3
+ * @param audioBuffer - Audio file buffer
  * @param userEmail - User's email (used for S3 key)
- * @returns S3 URL of uploaded video
+ * @returns S3 URL of uploaded audio
  */
-export async function uploadVideoToS3(videoBuffer: Buffer, userEmail: string): Promise<string> {
-    const key = `${userEmail}/video.mp4`;
+export async function uploadAudioToS3(audioBuffer: Buffer, userEmail: string): Promise<string> {
+    const key = `${userEmail}/audio.webm`;
 
     const command = new PutObjectCommand({
         Bucket: env.S3_BUCKET_NAME,
         Key: key,
-        Body: videoBuffer,
-        ContentType: 'video/mp4',
+        Body: audioBuffer,
+        ContentType: 'audio/webm',
     });
 
     await s3Client.send(command);
@@ -34,12 +34,12 @@ export async function uploadVideoToS3(videoBuffer: Buffer, userEmail: string): P
 }
 
 /**
- * Get signed URL for video (valid for 1 hour)
+ * Get signed URL for audio (valid for 1 hour)
  * @param userEmail - User's email
- * @returns Signed URL for video access
+ * @returns Signed URL for audio access
  */
-export async function getVideoUrl(userEmail: string): Promise<string> {
-    const key = `${userEmail}/video.mp4`;
+export async function getAudioUrl(userEmail: string): Promise<string> {
+    const key = `${userEmail}/audio.webm`;
 
     const command = new GetObjectCommand({
         Bucket: env.S3_BUCKET_NAME,
@@ -74,11 +74,11 @@ export async function getPresignedUrlFromKey(s3KeyOrUrl: string): Promise<string
 }
 
 /**
- * Delete video from S3
+ * Delete audio from S3
  * @param userEmail - User's email
  */
-export async function deleteVideo(userEmail: string): Promise<void> {
-    const key = `${userEmail}/video.mp4`;
+export async function deleteAudio(userEmail: string): Promise<void> {
+    const key = `${userEmail}/audio.webm`;
 
     const command = new DeleteObjectCommand({
         Bucket: env.S3_BUCKET_NAME,

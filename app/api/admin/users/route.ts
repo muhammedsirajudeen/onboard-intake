@@ -37,20 +37,20 @@ async function getHandler(request: NextRequest) {
 
     // Get paginated users
     const users = await User.find(query)
-        .select('name email picture socialLinks videoUrl videoRecorded videoRecordedAt profileCompleted hireableStatus strengths weaknesses createdAt emailSent emailSentAt')
+        .select('name email picture socialLinks audioUrl audioRecorded audioRecordedAt profileCompleted hireableStatus strengths weaknesses createdAt emailSent emailSentAt')
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
         .lean();
 
-    // Generate presigned URLs for videos
+    // Generate presigned URLs for audio files
     const usersWithPresignedUrls = await Promise.all(
         users.map(async (user) => {
-            if (user.videoUrl) {
+            if (user.audioUrl) {
                 try {
                     // Generate presigned URL
-                    const presignedUrl = await getPresignedUrlFromKey(user.videoUrl);
-                    return { ...user, videoUrl: presignedUrl };
+                    const presignedUrl = await getPresignedUrlFromKey(user.audioUrl);
+                    return { ...user, audioUrl: presignedUrl };
                 } catch (error) {
                     console.error('Error generating presigned URL for user:', user.email, error);
                     return user;

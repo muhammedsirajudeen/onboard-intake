@@ -8,7 +8,7 @@ import UserProfile from "@/components/user-profile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
-export default function VideoRecordingPage() {
+export default function AudioRecordingPage() {
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
     const [userName, setUserName] = useState<string>("User");
@@ -22,8 +22,7 @@ export default function VideoRecordingPage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [hasPermission, setHasPermission] = useState(false);
 
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const playbackRef = useRef<HTMLVideoElement>(null);
+    const audioRef = useRef<HTMLAudioElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const chunksRef = useRef<Blob[]>([]);
@@ -41,49 +40,45 @@ export default function VideoRecordingPage() {
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    // Request webcam access
-    const requestWebcamAccess = async () => {
+    // Request microphone access
+    const requestMicrophoneAccess = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "user" },
                 audio: true,
             });
             streamRef.current = stream;
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-            }
             setHasPermission(true);
             setError(null);
         } catch (err: any) {
-            console.error("Webcam access error:", err);
-            setError("Unable to access webcam. Please grant camera permissions.");
+            console.error("Microphone access error:", err);
+            setError("Unable to access microphone. Please grant microphone permissions.");
             setHasPermission(false);
         }
     };
 
     useEffect(() => {
-        // Check if video already recorded
-        const checkVideoStatus = async () => {
+        // Check if audio already recorded
+        const checkAudioStatus = async () => {
             try {
                 const response = await api.get("/api/user/profile");
                 if (response.data.success && response.data.user) {
-                    const { videoRecorded, name, picture } = response.data.user;
+                    const { audioRecorded, name, picture } = response.data.user;
                     if (name) setUserName(name);
                     if (picture) setUserPicture(picture);
 
-                    // If video already recorded, redirect to success
-                    if (videoRecorded) {
+                    // If audio already recorded, redirect to success
+                    if (audioRecorded) {
                         router.push("/success");
                         return;
                     }
                 }
             } catch (err) {
-                console.error("Error checking video status:", err);
+                console.error("Error checking audio status:", err);
             }
         };
 
-        checkVideoStatus();
-        requestWebcamAccess();
+        checkAudioStatus();
+        requestMicrophoneAccess();
 
         return () => {
             // Cleanup
@@ -96,13 +91,13 @@ export default function VideoRecordingPage() {
         };
     }, [router]);
 
-    // Set playback video source when recordedBlob changes
+    // Set playback audio source when recordedBlob changes
     useEffect(() => {
-        if (recordedBlob && playbackRef.current) {
+        if (recordedBlob && audioRef.current) {
             const blobUrl = URL.createObjectURL(recordedBlob);
             console.log("Setting playback URL:", blobUrl);
-            playbackRef.current.src = blobUrl;
-            playbackRef.current.load();
+            audioRef.current.src = blobUrl;
+            audioRef.current.load();
 
             // Cleanup blob URL on unmount
             return () => {
@@ -114,14 +109,14 @@ export default function VideoRecordingPage() {
     // Start recording
     const startRecording = () => {
         if (!streamRef.current) {
-            setError("No webcam stream available");
+            setError("No microphone stream available");
             return;
         }
 
         try {
             chunksRef.current = [];
             const mediaRecorder = new MediaRecorder(streamRef.current, {
-                mimeType: "video/webm;codecs=vp9",
+                mimeType: "audio/webm;codecs=opus",
             });
 
             mediaRecorder.ondataavailable = (event) => {
@@ -131,17 +126,14 @@ export default function VideoRecordingPage() {
             };
 
             mediaRecorder.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: "video/webm" });
+                const blob = new Blob(chunksRef.current, { type: "audio/webm" });
                 console.log("Blob created:", blob.size, "bytes");
                 setRecordedBlob(blob);
 
-                // Stop webcam stream after blob is created
+                // Stop microphone stream after blob is created
                 if (streamRef.current) {
                     streamRef.current.getTracks().forEach((track) => track.stop());
                     streamRef.current = null;
-                }
-                if (videoRef.current) {
-                    videoRef.current.srcObject = null;
                 }
             };
 
@@ -183,32 +175,31 @@ export default function VideoRecordingPage() {
         setRecordingTime(0);
         setError(null);
         setUploadProgress(0);
-        if (playbackRef.current) {
-            playbackRef.current.src = "";
+        if (audioRef.current) {
+            audioRef.current.src = "";
         }
 
-        // Restart webcam stream
-        await requestWebcamAccess();
+        // Restart microphone stream
+        await requestMicrophoneAccess();
     };
 
     // Upload to S3
-    const uploadVideo = async () => {
+    const uploadAudio = async () => {
         if (!recordedBlob) return;
 
         setIsUploading(true);
         setError(null);
 
         try {
-            // Convert webm to mp4 format name (backend handles the actual format)
             const formData = new FormData();
-            formData.append("video", recordedBlob, "video.mp4");
+            formData.append("audio", recordedBlob, "audio.webm");
 
             // Simulate progress (since we can't track actual upload progress easily with axios)
             const progressInterval = setInterval(() => {
                 setUploadProgress((prev) => Math.min(prev + 10, 90));
             }, 200);
 
-            const response = await api.post("/api/user/video/upload", formData, {
+            const response = await api.post("/api/user/audio/upload", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -218,7 +209,7 @@ export default function VideoRecordingPage() {
             setUploadProgress(100);
 
             if (response.data.success) {
-                // Video uploaded successfully - redirect to success page
+                // Audio uploaded successfully - redirect to success page
                 setTimeout(() => {
                     router.push("/success");
                     router.refresh();
@@ -226,7 +217,7 @@ export default function VideoRecordingPage() {
             }
         } catch (err: any) {
             console.error("Upload error:", err);
-            setError(err.response?.data?.error || "Failed to upload video. Please try again.");
+            setError(err.response?.data?.error || "Failed to upload audio. Please try again.");
             setUploadProgress(0);
         } finally {
             setIsUploading(false);
@@ -246,7 +237,7 @@ export default function VideoRecordingPage() {
             <ul className="space-y-2 text-gray-700">
                 <li className="flex items-start gap-2">
                     <span className="text-[#00D084] font-bold">1.</span>
-                    <span>Position yourself in a well-lit area with minimal background noise</span>
+                    <span>Find a quiet area with minimal background noise</span>
                 </li>
                 <li className="flex items-start gap-2">
                     <span className="text-[#00D084] font-bold">2.</span>
@@ -289,9 +280,9 @@ export default function VideoRecordingPage() {
                 <Drawer open={showInstructions} onOpenChange={setShowInstructions}>
                     <DrawerContent>
                         <DrawerHeader>
-                            <DrawerTitle>Video Recording</DrawerTitle>
+                            <DrawerTitle>Audio Recording</DrawerTitle>
                             <DrawerDescription>
-                                Follow these instructions for your video submission
+                                Follow these instructions for your audio submission
                             </DrawerDescription>
                         </DrawerHeader>
                         <InstructionsContent />
@@ -301,9 +292,9 @@ export default function VideoRecordingPage() {
                 <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
                     <DialogContent>
                         <DialogHeader onClose={() => setShowInstructions(false)}>
-                            <DialogTitle>Video Recording</DialogTitle>
+                            <DialogTitle>Audio Recording</DialogTitle>
                             <DialogDescription>
-                                Follow these instructions for your video submission
+                                Follow these instructions for your audio submission
                             </DialogDescription>
                         </DialogHeader>
                         <InstructionsContent />
@@ -313,14 +304,14 @@ export default function VideoRecordingPage() {
 
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center px-2 md:px-6 pt-20 md:pt-24 pb-8 md:pb-12">
-                <div className="max-w-6xl w-full">
+                <div className="max-w-4xl w-full">
                     {/* Header */}
                     <div className="text-center mb-6 md:mb-8">
                         <div className="inline-block mb-3 md:mb-4 px-3 py-1 md:px-4 md:py-2 bg-[#00D084]/10 rounded-full text-xs md:text-sm font-medium text-[#00D084]">
                             Step 3: Record Your Introduction
                         </div>
                         <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight">
-                            <span className="text-[#00D084]">Video</span> Introduction
+                            <span className="text-[#00D084]">Audio</span> Introduction
                         </h1>
                         <p className="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto">
                             Share your recent technical decisions, wins, and failures
@@ -334,26 +325,35 @@ export default function VideoRecordingPage() {
                         </div>
                     )}
 
-                    {/* Video Container */}
-                    <div className="bg-gray-50 rounded-2xl md:rounded-3xl p-3 md:p-8 border border-gray-200">
-                        {/* Video Display */}
-                        <div className="relative bg-black rounded-xl md:rounded-2xl overflow-hidden mb-4 md:mb-6" style={{ aspectRatio: "16/9" }}>
+                    {/* Audio Container */}
+                    <div className="bg-gray-50 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-200">
+                        {/* Audio Visualizer / Display */}
+                        <div className="relative bg-gradient-to-br from-[#00D084]/10 to-[#00B872]/5 rounded-xl md:rounded-2xl overflow-hidden mb-4 md:mb-6 p-8 md:p-12">
                             {!recordedBlob ? (
-                                <video
-                                    ref={videoRef}
-                                    autoPlay
-                                    muted
-                                    playsInline
-                                    className="w-full h-full object-cover"
-                                />
+                                <div className="flex flex-col items-center justify-center min-h-[200px]">
+                                    <div className={`w-24 h-24 rounded-full bg-[#00D084]/20 flex items-center justify-center mb-4 ${isRecording ? 'animate-pulse' : ''}`}>
+                                        <svg className="w-12 h-12 text-[#00D084]" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-gray-600 text-center">
+                                        {isRecording ? "Recording in progress..." : "Ready to record"}
+                                    </p>
+                                </div>
                             ) : (
-                                <video
-                                    ref={playbackRef}
-                                    controls
-                                    autoPlay
-                                    playsInline
-                                    className="w-full h-full object-cover"
-                                />
+                                <div className="flex flex-col items-center justify-center min-h-[200px]">
+                                    <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                                        <svg className="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-gray-600 text-center mb-4">Recording complete!</p>
+                                    <audio
+                                        ref={audioRef}
+                                        controls
+                                        className="w-full max-w-md"
+                                    />
+                                </div>
                             )}
 
                             {/* Recording Indicator */}
@@ -366,22 +366,22 @@ export default function VideoRecordingPage() {
 
                             {/* Timer */}
                             {(isRecording || recordedBlob) && (
-                                <div className="absolute top-4 right-4 bg-black/70 text-white px-4 py-2 rounded-full font-mono text-lg">
+                                <div className="absolute top-4 right-4 bg-black/70 text-white px-4 py-2 rounded-full font-mono text-sm md:text-lg">
                                     {formatTime(recordingTime)} / {formatTime(MAX_RECORDING_TIME)}
                                 </div>
                             )}
 
                             {/* No Permission Overlay */}
                             {!hasPermission && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-gray-900/90">
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-900/90 rounded-xl">
                                     <div className="text-center text-white p-6">
-                                        <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
                                         </svg>
-                                        <p className="text-lg font-semibold mb-2">Camera Access Required</p>
-                                        <p className="text-gray-300 mb-4">Please allow camera access to continue</p>
+                                        <p className="text-lg font-semibold mb-2">Microphone Access Required</p>
+                                        <p className="text-gray-300 mb-4">Please allow microphone access to continue</p>
                                         <button
-                                            onClick={requestWebcamAccess}
+                                            onClick={requestMicrophoneAccess}
                                             className="px-6 py-2 bg-[#00D084] text-white rounded-full hover:bg-[#00B872] transition-all"
                                         >
                                             Grant Access
@@ -395,7 +395,7 @@ export default function VideoRecordingPage() {
                         {isUploading && (
                             <div className="mb-6">
                                 <div className="flex justify-between text-sm text-gray-600 mb-2">
-                                    <span>Uploading video...</span>
+                                    <span>Uploading audio...</span>
                                     <span>{uploadProgress}%</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -444,11 +444,11 @@ export default function VideoRecordingPage() {
                                         Reset
                                     </button>
                                     <button
-                                        onClick={uploadVideo}
+                                        onClick={uploadAudio}
                                         disabled={isUploading}
                                         className="px-8 py-4 bg-[#00D084] text-white rounded-full font-semibold hover:bg-[#00B872] transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                     >
-                                        {isUploading ? "Uploading..." : "Submit Video"}
+                                        {isUploading ? "Uploading..." : "Submit Audio"}
                                     </button>
                                 </>
                             )}

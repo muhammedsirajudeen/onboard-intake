@@ -19,9 +19,9 @@ interface User {
         linkedin?: string;
         website?: string;
     };
-    videoUrl?: string;
-    videoRecorded: boolean;
-    videoRecordedAt?: string;
+    audioUrl?: string;
+    audioRecorded: boolean;
+    audioRecordedAt?: string;
     profileCompleted: boolean;
     hireableStatus?: 'hireable' | 'near_hireable' | 'unhireable' | 'not_assessed';
     strengths?: string[];
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
     });
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    const [selectedAudio, setSelectedAudio] = useState<string | null>(null);
     const [editingUser, setEditingUser] = useState<string | null>(null);
     const [editMode, setEditMode] = useState<'strengths' | 'weaknesses' | null>(null);
     const [editValue, setEditValue] = useState("");
@@ -311,9 +311,9 @@ export default function AdminDashboard() {
                                                         Profile ✓
                                                     </span>
                                                 )}
-                                                {user.videoRecorded && (
+                                                {user.audioRecorded && (
                                                     <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                                                        Video ✓
+                                                        Audio ✓
                                                     </span>
                                                 )}
                                                 {user.emailSent ? (
@@ -463,13 +463,13 @@ export default function AdminDashboard() {
                                             </div>
                                         )}
 
-                                        {/* Video */}
-                                        {user.videoUrl && (
+                                        {/* Audio */}
+                                        {user.audioUrl && (
                                             <button
-                                                onClick={() => setSelectedVideo(user.videoUrl!)}
+                                                onClick={() => setSelectedAudio(user.audioUrl!)}
                                                 className="px-4 py-2 bg-[#00D084] text-white rounded-lg hover:bg-[#00B872] transition-colors text-sm"
                                             >
-                                                ▶ Watch Video
+                                                🔊 Listen to Audio
                                             </button>
                                         )}
                                     </div>
@@ -503,28 +503,28 @@ export default function AdminDashboard() {
                 )}
             </div>
 
-            {/* Video Modal */}
-            {selectedVideo && (
+            {/* Audio Modal */}
+            {selectedAudio && (
                 <div
                     className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-6"
-                    onClick={() => setSelectedVideo(null)}
+                    onClick={() => setSelectedAudio(null)}
                 >
-                    <div className="max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
-                        <div className="bg-white rounded-xl p-4">
+                    <div className="max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
+                        <div className="bg-white rounded-xl p-6">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-semibold">Student Video</h3>
+                                <h3 className="text-lg font-semibold">Student Audio</h3>
                                 <button
-                                    onClick={() => setSelectedVideo(null)}
+                                    onClick={() => setSelectedAudio(null)}
                                     className="text-gray-600 hover:text-gray-900"
                                 >
                                     ✕
                                 </button>
                             </div>
-                            <video
-                                src={selectedVideo}
+                            <audio
+                                src={selectedAudio}
                                 controls
                                 autoPlay
-                                className="w-full rounded-lg"
+                                className="w-full"
                             />
                         </div>
                     </div>

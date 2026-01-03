@@ -17,9 +17,9 @@ export interface IUser {
     picture?: string;
     socialLinks?: ISocialLinks;
     profileCompleted: boolean;
-    videoUrl?: string;
-    videoRecorded: boolean;
-    videoRecordedAt?: Date;
+    audioUrl?: string;
+    audioRecorded: boolean;
+    audioRecordedAt?: Date;
     hireableStatus?: 'hireable' | 'near_hireable' | 'unhireable' | 'not_assessed';
     strengths?: string[];
     weaknesses?: string[];
@@ -68,15 +68,15 @@ const UserSchema = new Schema<IUser>(
             type: Boolean,
             default: false,
         },
-        videoUrl: {
+        audioUrl: {
             type: String,
             trim: true,
         },
-        videoRecorded: {
+        audioRecorded: {
             type: Boolean,
             default: false,
         },
-        videoRecordedAt: {
+        audioRecordedAt: {
             type: Date,
         },
         hireableStatus: {

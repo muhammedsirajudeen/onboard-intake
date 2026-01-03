@@ -16,7 +16,7 @@ async function getHandler() {
     await connectDB();
 
     const user = await User.findOne({ email: session.user.email }).select(
-        'name email picture socialLinks profileCompleted videoUrl videoRecorded videoRecordedAt hireableStatus strengths weaknesses isBeginnerLevel skipGithub'
+        'name email picture socialLinks profileCompleted audioUrl audioRecorded audioRecordedAt hireableStatus strengths weaknesses isBeginnerLevel skipGithub'
     );
 
     if (!user) {
@@ -31,9 +31,9 @@ async function getHandler() {
             picture: user.picture,
             socialLinks: user.socialLinks || {},
             profileCompleted: user.profileCompleted,
-            videoUrl: user.videoUrl,
-            videoRecorded: user.videoRecorded,
-            videoRecordedAt: user.videoRecordedAt,
+            audioUrl: user.audioUrl,
+            audioRecorded: user.audioRecorded,
+            audioRecordedAt: user.audioRecordedAt,
             hireableStatus: user.hireableStatus,
             strengths: user.strengths,
             weaknesses: user.weaknesses,

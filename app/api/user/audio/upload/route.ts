@@ -4,9 +4,9 @@ import { withLoggingAndErrorHandling } from '@/app/api/middleware/errorHandler';
 import RouteError from '@/app/api/error/routeError';
 import User from '@/app/models/user.model';
 import connectDB from '@/lib/mongodb';
-import { uploadVideoToS3 } from '@/lib/s3';
+import { uploadAudioToS3 } from '@/lib/s3';
 
-// POST /api/user/video/upload - Upload video to S3
+// POST /api/user/audio/upload - Upload audio to S3
 async function postHandler(request: NextRequest) {
     const session = await getSession();
 
@@ -15,22 +15,22 @@ async function postHandler(request: NextRequest) {
     }
 
     try {
-        // Get the video blob from the request
+        // Get the audio blob from the request
         const formData = await request.formData();
-        const videoFile = formData.get('video') as File;
+        const audioFile = formData.get('audio') as File;
 
-        if (!videoFile) {
-            throw new RouteError('No video file provided', 400);
+        if (!audioFile) {
+            throw new RouteError('No audio file provided', 400);
         }
 
         // Convert File to Buffer
-        const arrayBuffer = await videoFile.arrayBuffer();
+        const arrayBuffer = await audioFile.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
         // Upload to S3
-        const videoUrl = await uploadVideoToS3(buffer, session.user.email);
+        const audioUrl = await uploadAudioToS3(buffer, session.user.email);
 
-        console.log('✅ Video uploaded to S3:', videoUrl);
+        console.log('✅ Audio uploaded to S3:', audioUrl);
 
         // Update user record
         await connectDB();
@@ -41,13 +41,13 @@ async function postHandler(request: NextRequest) {
             { email: session.user.email },
             {
                 $set: {
-                    videoUrl,
-                    videoRecorded: true,
-                    videoRecordedAt: new Date(),
+                    audioUrl,
+                    audioRecorded: true,
+                    audioRecordedAt: new Date(),
                 },
             },
             { new: true }
-        ).select('name email videoUrl videoRecorded videoRecordedAt');
+        ).select('name email audioUrl audioRecorded audioRecordedAt');
 
         if (!user) {
             console.error('❌ User not found:', session.user.email);
@@ -56,27 +56,27 @@ async function postHandler(request: NextRequest) {
 
         console.log('✅ User record updated:', {
             email: user.email,
-            videoRecorded: user.videoRecorded,
-            videoUrl: user.videoUrl,
-            videoRecordedAt: user.videoRecordedAt
+            audioRecorded: user.audioRecorded,
+            audioUrl: user.audioUrl,
+            audioRecordedAt: user.audioRecordedAt
         });
 
         return NextResponse.json({
             success: true,
-            message: 'Video uploaded successfully',
-            videoUrl,
+            message: 'Audio uploaded successfully',
+            audioUrl,
             user: {
                 name: user.name,
                 email: user.email,
-                videoUrl: user.videoUrl,
-                videoRecorded: user.videoRecorded,
-                videoRecordedAt: user.videoRecordedAt,
+                audioUrl: user.audioUrl,
+                audioRecorded: user.audioRecorded,
+                audioRecordedAt: user.audioRecordedAt,
             },
         });
     } catch (error: any) {
-        console.error('Video upload error:', error);
+        console.error('Audio upload error:', error);
         throw new RouteError(
-            error.message || 'Failed to upload video',
+            error.message || 'Failed to upload audio',
             error.statusCode || 500
         );
     }
