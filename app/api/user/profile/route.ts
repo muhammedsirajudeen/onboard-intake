@@ -16,7 +16,7 @@ async function getHandler() {
     await connectDB();
 
     const user = await User.findOne({ email: session.user.email }).select(
-        'name email picture socialLinks profileCompleted videoUrl videoRecorded videoRecordedAt hireableStatus strengths weaknesses'
+        'name email picture socialLinks profileCompleted videoUrl videoRecorded videoRecordedAt hireableStatus strengths weaknesses isBeginnerLevel skipGithub'
     );
 
     if (!user) {
@@ -37,6 +37,8 @@ async function getHandler() {
             hireableStatus: user.hireableStatus,
             strengths: user.strengths,
             weaknesses: user.weaknesses,
+            isBeginnerLevel: user.isBeginnerLevel,
+            skipGithub: user.skipGithub,
         },
     });
 }
@@ -50,9 +52,43 @@ async function putHandler(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { socialLinks } = body;
+    const { socialLinks, skipGithub } = body;
 
-    // Validate GitHub is provided
+    // If user is skipping GitHub, mark as beginner level
+    if (skipGithub) {
+        await connectDB();
+
+        const user = await User.findOneAndUpdate(
+            { email: session.user.email },
+            {
+                $set: {
+                    isBeginnerLevel: true,
+                    skipGithub: true,
+                    profileCompleted: true,
+                },
+            },
+            { new: true }
+        ).select('name email picture isBeginnerLevel skipGithub profileCompleted');
+
+        if (!user) {
+            throw new RouteError('User not found', 404);
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'Profile updated as beginner level',
+            user: {
+                name: user.name,
+                email: user.email,
+                picture: user.picture,
+                isBeginnerLevel: user.isBeginnerLevel,
+                skipGithub: user.skipGithub,
+                profileCompleted: user.profileCompleted,
+            },
+        });
+    }
+
+    // Validate GitHub is provided for non-beginner flow
     if (!socialLinks?.github || socialLinks.github.trim() === '') {
         throw new RouteError('GitHub profile is required', 400);
     }

@@ -38,9 +38,15 @@ export default function OnboardingPage() {
             try {
                 const response = await api.get("/api/user/profile");
                 if (response.data.success && response.data.user) {
-                    const { socialLinks, profileCompleted, videoRecorded, name, picture } = response.data.user;
+                    const { socialLinks, profileCompleted, videoRecorded, name, picture, isBeginnerLevel } = response.data.user;
                     if (name) setUserName(name);
                     if (picture) setUserPicture(picture);
+
+                    // If user is beginner level, redirect to beginner page
+                    if (isBeginnerLevel) {
+                        router.push("/beginner");
+                        return;
+                    }
 
                     // If both profile and video completed, redirect to success
                     if (profileCompleted && videoRecorded) {
@@ -111,6 +117,30 @@ export default function OnboardingPage() {
         }
 
         return true;
+    };
+
+    const handleSkipGithub = async () => {
+        console.log('🔄 Skip GitHub clicked');
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            console.log('📤 Sending skip GitHub request...');
+            const response = await api.put("/api/user/profile", {
+                skipGithub: true,
+            });
+            console.log('✅ Skip GitHub response:', response.data);
+
+            // Redirect to beginner page
+            console.log('➡️ Redirecting to /beginner');
+            router.push("/beginner");
+        } catch (err: any) {
+            console.error('❌ Skip GitHub error:', err);
+            setError(err.response?.data?.error || "Failed to update profile. Please try again.");
+            console.error("Profile update error:", err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -205,6 +235,24 @@ export default function OnboardingPage() {
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="bg-gray-50 rounded-3xl p-8 md:p-12 border border-gray-200">
+                        {/* Skip GitHub Button */}
+                        <div className="mb-6 pb-6 border-b border-gray-300">
+                            <div className="flex items-center justify-between gap-4 flex-wrap">
+                                <div className="flex-1 min-w-[200px]">
+                                    <p className="text-sm font-medium text-gray-700 mb-1">Don't have a GitHub profile yet?</p>
+                                    <p className="text-xs text-gray-500">Start with our beginner program</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleSkipGithub}
+                                    disabled={isLoading}
+                                    className="px-6 py-2.5 bg-yellow-400 text-gray-900 rounded-full font-semibold text-sm hover:bg-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                                >
+                                    Skip - I'm a Beginner
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="space-y-6">
                             {/* GitHub - Required */}
                             <div>

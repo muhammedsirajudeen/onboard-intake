@@ -23,6 +23,8 @@ export interface IUser {
     hireableStatus?: 'hireable' | 'near_hireable' | 'unhireable' | 'not_assessed';
     strengths?: string[];
     weaknesses?: string[];
+    isBeginnerLevel?: boolean;
+    skipGithub?: boolean;
     createdAt: Date;
     updatedAt: Date;
     lastLoginAt: Date;
@@ -88,6 +90,14 @@ const UserSchema = new Schema<IUser>(
         weaknesses: [{
             type: String,
         }],
+        isBeginnerLevel: {
+            type: Boolean,
+            default: false,
+        },
+        skipGithub: {
+            type: Boolean,
+            default: false,
+        },
         lastLoginAt: {
             type: Date,
             default: Date.now,

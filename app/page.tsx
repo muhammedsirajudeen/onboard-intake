@@ -21,13 +21,19 @@ export default function Home() {
       console.log('📊 Profile API Response:', response.data);
 
       if (response.data.success && response.data.user) {
-        const { profileCompleted, videoRecorded } = response.data.user;
+        const { profileCompleted, videoRecorded, isBeginnerLevel } = response.data.user;
 
         console.log('✅ Profile completed:', profileCompleted);
         console.log('🎥 Video recorded:', videoRecorded);
+        console.log('👶 Is beginner:', isBeginnerLevel);
 
+        // If user is beginner level, redirect to beginner page
+        if (isBeginnerLevel) {
+          console.log('➡️ Redirecting to BEGINNER page');
+          router.push("/beginner");
+        }
         // If both completed, go to success page
-        if (profileCompleted && videoRecorded) {
+        else if (profileCompleted && videoRecorded) {
           console.log('➡️ Redirecting to SUCCESS page');
           router.push("/success");
         }
