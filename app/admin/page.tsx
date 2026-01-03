@@ -29,6 +29,7 @@ interface User {
     createdAt: string;
     emailSent?: boolean;
     emailSentAt?: string;
+    isBeginnerLevel?: boolean;
 }
 
 interface Pagination {
@@ -314,6 +315,11 @@ export default function AdminDashboard() {
                                                 {user.audioRecorded && (
                                                     <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
                                                         Audio ✓
+                                                    </span>
+                                                )}
+                                                {user.isBeginnerLevel && (
+                                                    <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                                                        Beginner
                                                     </span>
                                                 )}
                                                 {user.emailSent ? (
