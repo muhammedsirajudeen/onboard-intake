@@ -6,6 +6,11 @@ import User from '@/app/models/user.model';
 import connectDB from '@/lib/mongodb';
 import { uploadAudioToS3 } from '@/lib/s3';
 
+// Configure route segment to allow larger file uploads
+export const runtime = 'nodejs';
+export const maxDuration = 60; // 60 seconds timeout for upload
+export const dynamic = 'force-dynamic';
+
 // POST /api/user/audio/upload - Upload audio to S3
 async function postHandler(request: NextRequest) {
     const session = await getSession();
